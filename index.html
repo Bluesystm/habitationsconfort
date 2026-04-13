@@ -91,28 +91,24 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             transition: all .3s;
-            padding: 0 0;
-            height: 70px;
-            overflow: visible;
+            padding: 6px 0;
         }
 
-        header.scrolled { box-shadow: var(--sh-sm); height: 60px; }
+        header.scrolled { padding: 4px 0; box-shadow: var(--sh-sm); }
 
         .header-inner {
             display: flex; align-items: center; justify-content: space-between;
             max-width: 1200px; margin: 0 auto; padding: 0 2rem;
-            height: 100%; overflow: visible;
         }
 
-        .logo { overflow: visible; display: flex; align-items: flex-end; align-self: flex-end; }
+        .logo { display: flex; align-items: center; }
 
         .logo img {
-            height: 130px; width: auto;
+            height: 110px; width: auto;
             transition: height .3s;
-            position: relative; z-index: 2;
         }
 
-        header.scrolled .logo img { height: 80px; }
+        header.scrolled .logo img { height: 75px; }
 
         nav { display: flex; align-items: center; gap: 2rem; }
 
