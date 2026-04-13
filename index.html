@@ -935,7 +935,7 @@
                 order: -1; width: 100%;
                 padding-top: 4rem; margin-top: 0;
             }
-            .hero-right .hero-video-wrap { height: 120vw; max-height: 650px; border-radius: .75rem; }
+            .hero-right .hero-video-wrap { height: 72vh; border-radius: .75rem; }
             .hero-eyebrow { display: none; }
             .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
             .hero-desc { font-size: .95rem; }
@@ -1823,8 +1823,11 @@
         card.addEventListener('mouseenter', () => { video.play(); });
         card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
         // Mobile touch
-        card.addEventListener('touchstart', () => { video.play(); }, { passive: true });
-        card.addEventListener('touchend',   () => { setTimeout(() => { video.pause(); video.currentTime = 0; }, 2000); }, { passive: true });
+        card.addEventListener('touchstart', () => {
+            // Pause all other service videos first
+            document.querySelectorAll('.svc-video').forEach(v => { if (v !== video) { v.pause(); v.currentTime = 0; } });
+            video.play();
+        }, { passive: true });
     });
 
     /* ── Form submit (Formspree AJAX) ───────────*/
