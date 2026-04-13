@@ -232,7 +232,8 @@
             border: 1.5px solid rgba(46,125,50,.35);
             color: var(--green); padding: .45rem 1.1rem;
             border-radius: 2rem; font-size: .85rem; font-weight: 600;
-            transition: all .25s;
+            transition: all .25s; text-decoration: none; cursor: pointer;
+            display: inline-block;
         }
 
         .pill:hover { background: var(--green); color: var(--white); border-color: var(--green); }
@@ -906,13 +907,14 @@
             .hamburger { display: flex; }
             .logo img { height: 80px; }
             header { padding: 4px 0; }
+            .hide-mobile { display: none !important; }
 
             /* Hero */
             .hero { padding: 4rem 0 3rem; }
             .hero-inner { flex-direction: column; gap: 1.5rem; }
             .hero-right {
                 order: -1; width: 100%;
-                padding-top: 0; margin-top: 0;
+                padding-top: 1.5rem; margin-top: 0;
             }
             .hero-right .hero-video-wrap { max-height: 260px; border-radius: .75rem; }
             .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
@@ -1064,7 +1066,7 @@
             <a href="tel:5819958882" class="nav-phone">
                 <i class="fas fa-phone"></i> (581) 995-8882
             </a>
-            <a href="#contact" class="btn btn-primary">Soumission Gratuite</a>
+            <a href="#contact" class="btn btn-primary hide-mobile">Soumission Gratuite</a>
         </div>
 
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
@@ -1104,10 +1106,10 @@
                 </p>
 
                 <div class="service-pills">
-                    <span class="pill">Isolation</span>
-                    <span class="pill">Décontamination</span>
-                    <span class="pill">Ventilation</span>
-                    <span class="pill">Extraction</span>
+                    <a href="#services" class="pill">Isolation</a>
+                    <a href="#services" class="pill">Décontamination</a>
+                    <a href="#services" class="pill">Ventilation</a>
+                    <a href="#services" class="pill">Extraction</a>
                 </div>
 
                 <div class="hero-buttons">
@@ -1615,7 +1617,7 @@
                     <div class="ci-icon"><i class="fas fa-clock"></i></div>
                     <div class="ci-text">
                         <h4>Heures d'ouverture</h4>
-                        <p>Lundi – Vendredi : 7h00 – 18h00<br/>Samedi : 8h00 – 15h00</p>
+                        <p>Lundi – Vendredi : 10h00 – 17h00<br/>Samedi : 10h00 – 17h00</p>
                     </div>
                 </div>
                 <div class="ci-block">
