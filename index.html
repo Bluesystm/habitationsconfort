@@ -890,46 +890,116 @@
         /* ═══════════════════════════════════════════
            RESPONSIVE
         ═══════════════════════════════════════════ */
+        /* ── Tablette ─────────────────────────────── */
         @media (max-width: 1024px) {
             .services-grid { grid-template-columns: repeat(2, 1fr); }
             .stats-grid    { grid-template-columns: repeat(2, 1fr); }
             .footer-grid   { grid-template-columns: 1fr 1fr; }
             .footer-brand  { grid-column: 1 / -1; }
-            .zones-grid    { grid-template-columns: repeat(3, 1fr); }
         }
 
+        /* ── Mobile (≤ 860px) ─────────────────────── */
         @media (max-width: 860px) {
+            /* Header */
             nav { display: none; }
             .nav-phone { display: none; }
             .hamburger { display: flex; }
+            .logo img { height: 80px; }
+            header { padding: 4px 0; }
 
-            .hero-inner { flex-direction: column; }
-            .hero-right { order: -1; width: 100%; }
-            .hero-right .hero-video-wrap { max-height: 380px; }
+            /* Hero */
+            .hero { padding: 4rem 0 3rem; }
+            .hero-inner { flex-direction: column; gap: 1.5rem; }
+            .hero-right {
+                order: -1; width: 100%;
+                padding-top: 0; margin-top: 0;
+            }
+            .hero-right .hero-video-wrap { max-height: 260px; border-radius: .75rem; }
+            .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
+            .hero-desc { font-size: .95rem; }
+            .hero-buttons { flex-direction: column; gap: .75rem; }
+            .hero-buttons .btn { width: 100%; justify-content: center; text-align: center; }
+            .service-pills { flex-wrap: wrap; gap: .4rem; }
 
-            .about-grid    { grid-template-columns: 1fr; gap: 2.5rem; }
+            /* Services */
+            .services-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .svc-card { min-height: 360px; }
+            .svc-card-title { font-size: 1.1rem; }
+
+            /* About */
+            .about-grid    { grid-template-columns: 1fr; gap: 2rem; }
             .about-gallery { grid-template-columns: repeat(2,1fr); }
 
+            /* Slider avant/après */
+            .slider-inner  { height: 280px; }
+
+            /* Testimonials */
+            .testi-card { min-width: 280px; }
+
+            /* Map */
+            #zones-map { height: 350px; }
+
+            /* Contact */
             .contact-grid  { grid-template-columns: 1fr; }
 
-            .slider-inner  { height: 320px; }
-
-            .svc-card { min-height: 420px; }
-
+            /* Footer */
             .mobile-bar { display: flex; }
             footer { padding-bottom: 5rem; }
         }
 
+        /* ── Petit mobile (≤ 640px) ───────────────── */
         @media (max-width: 640px) {
-            section { padding: 3.5rem 0; }
-            .services-grid { grid-template-columns: 1fr; }
-            .stats-grid    { grid-template-columns: repeat(2,1fr); gap: 1.25rem; }
-            .zones-grid    { grid-template-columns: repeat(2,1fr); }
-            .footer-grid   { grid-template-columns: 1fr; gap: 2rem; }
-            .stats-bar     { margin-top: 90px; }
-            .contact-form-box { padding: 1.75rem 1.25rem; }
-            .slider-inner  { height: 240px; }
+            section { padding: 3rem 0; }
+
+            /* Header */
+            .logo img { height: 70px; }
+            .header-inner { padding: 0 1rem; }
+
+            /* Hero */
+            .hero { padding: 3rem 0 2.5rem; }
+            .hero h1 { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+            .hero-right .hero-video-wrap { max-height: 220px; }
+            .hero-desc { font-size: .9rem; }
+
+            /* Services */
+            .services-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .svc-card { min-height: 300px; }
+
+            /* Stats */
+            .stats-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+            .stat-num { font-size: 1.9rem; }
+
+            /* Van */
+            .van-img-wrap { max-width: 320px; }
+
+            /* Slider avant/après */
+            .slider-inner { height: 210px; }
+
+            /* About */
             .about-gallery { display: none; }
+
+            /* Témoignages */
+            .testi-card { min-width: 260px; padding: 1.25rem; }
+            .testi-quote { font-size: .88rem; }
+
+            /* Map */
+            #zones-map { height: 280px; }
+
+            /* Contact */
+            .contact-form-box { padding: 1.5rem 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+
+            /* Footer */
+            .footer-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+            .stats-bar   { margin-top: 70px; }
+        }
+
+        /* ── Très petit (≤ 400px) ─────────────────── */
+        @media (max-width: 400px) {
+            .hero h1 { font-size: 1.7rem; }
+            .btn { font-size: .82rem; padding: .7rem 1.2rem; }
+            .svc-card { min-height: 260px; }
+            #zones-map { height: 240px; }
         }
     </style>
 </head>
