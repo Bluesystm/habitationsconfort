@@ -92,14 +92,19 @@
             border-bottom: 1px solid var(--border);
             transition: all .3s;
             padding: 0 0;
+            height: 70px;
+            overflow: visible;
         }
 
-        header.scrolled { padding: 0 0; box-shadow: var(--sh-sm); }
+        header.scrolled { box-shadow: var(--sh-sm); height: 60px; }
 
         .header-inner {
             display: flex; align-items: center; justify-content: space-between;
             max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+            height: 100%; overflow: visible;
         }
+
+        .logo { overflow: visible; display: flex; align-items: center; }
 
         .logo img {
             height: 140px; width: auto;
@@ -176,7 +181,7 @@
            HERO
         ═══════════════════════════════════════════ */
         .hero {
-            background: var(--white); padding: 7rem 0 4.5rem;
+            background: var(--white); padding: 5.5rem 0 4.5rem;
             position: relative; overflow: hidden;
         }
 
