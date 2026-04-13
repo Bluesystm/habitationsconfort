@@ -208,11 +208,28 @@
             display: inline-flex; align-items: center; gap: .5rem;
             color: var(--green); font-weight: 700; font-size: .9rem;
             letter-spacing: .08em; text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 1rem; white-space: nowrap;
         }
 
         .hero-eyebrow::before {
             content: ''; width: 28px; height: 2px; background: var(--green);
+            flex-shrink: 0;
+        }
+
+        /* Subvention mobile */
+        .subvention-mobile {
+            display: none;
+            background: var(--green); color: white;
+            font-size: .75rem; font-weight: 700;
+            padding: .35rem .75rem; border-radius: 2rem;
+            text-decoration: none; white-space: nowrap;
+            animation: pulse-green 2s ease-in-out infinite;
+        }
+        .show-mobile { display: none; }
+
+        @keyframes pulse-green {
+            0%,100% { box-shadow: 0 0 0 0 rgba(46,125,50,.4); }
+            50%      { box-shadow: 0 0 0 6px rgba(46,125,50,0); }
         }
 
         .hero h1 { color: var(--text-dark); margin-bottom: 1.25rem; }
@@ -908,15 +925,19 @@
             .logo img { height: 80px; }
             header { padding: 4px 0; }
             .hide-mobile { display: none !important; }
+            .show-mobile { display: flex !important; }
+            .subvention-mobile { display: flex; align-items: center; gap: .3rem; }
 
             /* Hero */
             .hero { padding: 4rem 0 3rem; }
             .hero-inner { flex-direction: column; gap: 1.5rem; }
             .hero-right {
                 order: -1; width: 100%;
-                padding-top: 1.5rem; margin-top: 0;
+                padding-top: 4rem; margin-top: 0;
             }
             .hero-right .hero-video-wrap { max-height: 260px; border-radius: .75rem; }
+            .hero-eyebrow { white-space: normal; }
+            .hero-eyebrow::before { margin-top: 3px; }
             .hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
             .hero-desc { font-size: .95rem; }
             .hero-buttons { flex-direction: column; gap: .75rem; }
@@ -1067,6 +1088,7 @@
                 <i class="fas fa-phone"></i> (581) 995-8882
             </a>
             <a href="#contact" class="btn btn-primary hide-mobile">Soumission Gratuite</a>
+            <a href="#contact" class="subvention-mobile show-mobile">🏡 Subventions disponibles</a>
         </div>
 
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
@@ -1617,7 +1639,7 @@
                     <div class="ci-icon"><i class="fas fa-clock"></i></div>
                     <div class="ci-text">
                         <h4>Heures d'ouverture</h4>
-                        <p>Lundi – Vendredi : 10h00 – 17h00<br/>Samedi : 10h00 – 17h00</p>
+                        <p>Lundi – Vendredi : 10h00 – 17h00<br/>Samedi – Dimanche : Fermé</p>
                     </div>
                 </div>
                 <div class="ci-block">
