@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Habitations Confort — Experts en isolation, décontamination et ventilation résidentielles à Québec. Soumission gratuite au 581-995-8882.">
+    <title>Habitations Confort — Isolation Résidentielle à Québec</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green:      #2E7D32;
+            --green-acc:  #4CAF50;
+            --green-foot: #1b5e20;
+            --dark-bg:    #1a1a2e;
+            --light-bg:   #f8f9fa;
+            --text-dark:  #1a1a1a;
+            --text-mid:   #555;
+            --text-light: #777;
+            --white:      #ffffff;
+            --border:     #e8e8e8;
+            --sh-sm:  0 2px 8px rgba(0,0,0,.08);
+            --sh-md:  0 8px 24px rgba(0,0,0,.12);
+            --sh-lg:  0 16px 48px rgba(0,0,0,.16);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1,h2,h3,h4,h5,h6 {
+            font-family: 'Montserrat', 'Inter', sans-serif;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 900; letter-spacing: -.025em; }
+        h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.015em; }
+        h3 { font-size: 1.5rem; font-weight: 700; }
+
+        p { color: var(--text-mid); margin-bottom: 1rem; line-height: 1.75; }
+
+        a { text-decoration: none; color: var(--green); transition: color .25s; }
+        a:hover { color: var(--green-acc); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        section { padding: 5rem 0; }
+
+        /* ── Buttons ─────────────────────────────── */
+        .btn {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .9rem 1.75rem; border-radius: .5rem;
+            font-weight: 700; font-size: .95rem; cursor: pointer;
+            border: none; transition: all .3s; text-align: center;
+        }
+
+        .btn-primary { background: var(--green); color: var(--white); box-shadow: 0 4px 16px rgba(46,125,50,.3); }
+        .btn-primary:hover { background: #1f5620; transform: translateY(-2px); box-shadow: var(--sh-md); color: var(--white); }
+
+        .btn-outline { background: transparent; color: var(--green); border: 2px solid var(--green); }
+        .btn-outline:hover { background: var(--green); color: var(--white); transform: translateY(-2px); }
+
+        .btn-white { background: var(--white); color: var(--green); font-weight: 700; }
+        .btn-white:hover { background: var(--light-bg); transform: translateY(-2px); color: var(--green); }
+
+        /* ── Section header ───────────────────────── */
+        .sec-eyebrow {
+            color: var(--green); font-weight: 700; font-size: .85rem;
+            letter-spacing: .1em; text-transform: uppercase; margin-bottom: .6rem;
+        }
+
+        .sec-eyebrow-light { color: rgba(255,255,255,.75); }
+
+        /* ═══════════════════════════════════════════
+           HEADER
+        ═══════════════════════════════════════════ */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(255,255,255,.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            transition: all .3s;
+            padding: 0 0;
+        }
+
+        header.scrolled { padding: 0 0; box-shadow: var(--sh-sm); }
+
+        .header-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+        }
+
+        .logo img {
+            height: 140px; width: auto;
+            transition: height .3s;
+            position: relative; z-index: 2;
+        }
+
+        header.scrolled .logo img { height: 90px; }
+
+        nav { display: flex; align-items: center; gap: 2rem; }
+
+        nav a { color: var(--text-dark); font-weight: 500; font-size: .92rem; }
+        nav a:hover { color: var(--green); }
+
+        .header-right { display: flex; align-items: center; gap: 1.25rem; }
+
+        .nav-phone {
+            display: flex; align-items: center; gap: .45rem;
+            color: var(--text-dark); font-weight: 600; font-size: .92rem;
+        }
+        .nav-phone:hover { color: var(--green); }
+
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+        .hamburger span { width: 24px; height: 2px; background: var(--text-dark); border-radius: 2px; transition: all .3s; }
+
+        .mobile-menu {
+            display: none; flex-direction: column;
+            position: fixed; top: 72px; left: 0; right: 0;
+            background: var(--white); padding: 1.5rem 2rem; gap: 1rem; z-index: 999;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--sh-md);
+        }
+
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { color: var(--text-dark); font-weight: 500; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+        .mobile-menu a:last-child { border: none; }
+
+        /* ═══════════════════════════════════════════
+           STATS BANNER (ticker)
+        ═══════════════════════════════════════════ */
+        .stats-banner {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
+            background: linear-gradient(90deg, var(--green) 0%, var(--green-acc) 100%);
+            padding: .55rem 0; overflow: hidden;
+        }
+
+        .banner-track {
+            display: flex; width: max-content;
+            animation: banner-scroll 22s linear infinite;
+        }
+
+        .banner-track:hover { animation-play-state: paused; }
+
+        @keyframes banner-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .banner-item {
+            display: flex; align-items: center; gap: .6rem;
+            padding: 0 2.5rem; white-space: nowrap;
+            font-size: .82rem; font-weight: 600; color: var(--white);
+        }
+
+        .banner-item i { font-size: .85rem; opacity: .85; }
+        .banner-val { font-weight: 800; }
+        .banner-sep { color: rgba(255,255,255,.35); padding: 0 .75rem; }
+
+        /* Push header below banner */
+        body { padding-top: 30px; }
+        header { top: 30px; }
+
+        /* ═══════════════════════════════════════════
+           HERO
+        ═══════════════════════════════════════════ */
+        .hero {
+            background: var(--white); padding: 7rem 0 4.5rem;
+            position: relative; overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute; top: -20%; right: -5%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(46,125,50,.06) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute; bottom: -10%; left: -5%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(76,175,80,.04) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none;
+        }
+
+        .hero-inner {
+            display: flex; gap: 3.5rem; align-items: flex-start;
+            position: relative; z-index: 1;
+        }
+
+        .hero-left { flex: 1.15; }
+
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: .5rem;
+            color: var(--green); font-weight: 700; font-size: .9rem;
+            letter-spacing: .08em; text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero-eyebrow::before {
+            content: ''; width: 28px; height: 2px; background: var(--green);
+        }
+
+        .hero h1 { color: var(--text-dark); margin-bottom: 1.25rem; }
+        .hero h1 .green { color: var(--green); }
+
+        .hero-desc {
+            font-size: 1.1rem; color: var(--text-mid); max-width: 520px;
+            line-height: 1.8; margin-bottom: 1.75rem;
+        }
+
+        .service-pills {
+            display: flex; flex-wrap: wrap; gap: .65rem; margin-bottom: 2rem;
+        }
+
+        .pill {
+            background: rgba(46,125,50,.08);
+            border: 1.5px solid rgba(46,125,50,.35);
+            color: var(--green); padding: .45rem 1.1rem;
+            border-radius: 2rem; font-size: .85rem; font-weight: 600;
+            transition: all .25s;
+        }
+
+        .pill:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        /* Hero right – video */
+        .hero-right {
+            flex: 0.7; position: relative;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .hero-video-wrap {
+            position: relative; width: 100%;
+            border-radius: 1.25rem; overflow: hidden;
+            box-shadow: var(--sh-lg);
+        }
+
+        .hero-video-wrap video {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+
+        /* Video placeholder shown when no video file */
+        .hero-video-placeholder {
+            width: 100%;
+            background: linear-gradient(145deg, #0d2010, #163320, #0a1a0d);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 1rem; padding: 4rem 2rem;
+            color: rgba(255,255,255,.3); text-align: center;
+        }
+
+        .hero-video-placeholder i { font-size: 3rem; }
+        .hero-video-placeholder p { color: rgba(255,255,255,.3); font-size: .85rem; margin: 0; }
+
+        /* Play button overlay */
+        .play-btn {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            width: 72px; height: 72px;
+            background: var(--green); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 5;
+            box-shadow: 0 8px 30px rgba(46,125,50,.45);
+            transition: all .3s;
+        }
+
+        .play-btn:hover { background: var(--green-acc); transform: translate(-50%,-50%) scale(1.1); }
+
+        .play-btn i { color: white; font-size: 1.4rem; margin-left: 4px; }
+
+        /* Hero trust bar */
+        .hero-trust {
+            display: flex; gap: 2.5rem; margin-top: 2.5rem; flex-wrap: wrap;
+        }
+
+        .trust-item { display: flex; flex-direction: column; gap: .1rem; }
+        .trust-num { font-size: 1.9rem; font-weight: 900; color: var(--green); font-family: 'Montserrat', sans-serif; line-height: 1; }
+        .trust-lbl { font-size: .72rem; color: var(--text-light); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+
+        /* ═══════════════════════════════════════════
+           VAN / CAMION SHOWCASE
+        ═══════════════════════════════════════════ */
+        .van-section {
+            padding: 3rem 0 4rem; text-align: center;
+            background: var(--white); overflow: hidden;
+        }
+
+        .van-section h2 { margin-bottom: .5rem; }
+        .van-section .van-sub { font-size: 1.05rem; color: var(--text-mid); max-width: 500px; margin: 0 auto; }
+
+        .van-wrap {
+            position: relative; max-width: 860px; margin: 2rem auto 0;
+        }
+
+        .van-wrap::after {
+            content: none;
+        }
+
+        .van-img {
+            width: 100%; height: auto;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .van-placeholder {
+            width: 100%; padding: 5rem 2rem; min-height: 320px;
+            background: linear-gradient(135deg, #eef5ee 0%, #ddeedd 100%);
+            border-radius: 1.5rem; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 1.25rem; animation: float 4s ease-in-out infinite;
+            border: 2px dashed rgba(46,125,50,.2);
+        }
+
+        .van-placeholder i { font-size: 5rem; color: var(--green); opacity: .35; }
+        .van-placeholder p { color: var(--text-light); font-size: .88rem; margin: 0; text-align: center; line-height: 1.6; }
+
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-12px); }
+        }
+
+        /* ═══════════════════════════════════════════
+           STATS BAR (static numbers)
+        ═══════════════════════════════════════════ */
+        .stats-bar {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-acc) 100%);
+            color: var(--white); padding: 3rem 0; margin-top: 0;
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center; display: flex; flex-direction: column;
+            align-items: center; gap: .75rem;
+        }
+
+        .stat-icon-wrap {
+            width: 56px; height: 56px; background: rgba(255,255,255,.15);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-num { font-size: 2.4rem; font-weight: 900; font-family: 'Montserrat', sans-serif; line-height: 1; }
+        .stat-lbl { font-size: .9rem; opacity: .9; font-weight: 500; }
+
+        /* ═══════════════════════════════════════════
+           SERVICES (green bg + SVG triangle divider)
+        ═══════════════════════════════════════════ */
+        .services-section {
+            background: var(--green); color: var(--white);
+            padding: calc(5rem + 80px) 0 5rem; position: relative;
+        }
+
+        .triangle-divider {
+            position: absolute; top: -1px; left: 0;
+            width: 100%; height: 81px; display: block;
+        }
+
+        .services-section .sec-eyebrow { color: rgba(255,255,255,.75); }
+
+        .services-section h2 { color: var(--white); margin-bottom: .75rem; }
+        .services-section .sec-sub { color: rgba(255,255,255,.8); max-width: 560px; margin-bottom: 3rem; }
+
+        .services-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+        }
+
+        .svc-card {
+            position: relative; overflow: hidden;
+            border-radius: 1.25rem; min-height: 500px;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            transition: transform .35s, box-shadow .35s;
+            cursor: default;
+        }
+
+        .svc-card:hover { transform: translateY(-8px); box-shadow: var(--sh-lg); }
+
+        /* Card image/bg */
+        .svc-card-bg {
+            position: absolute; inset: 0;
+            object-fit: cover; width: 100%; height: 100%;
+            z-index: 0;
+        }
+
+        .svc-card-bg.ph { background-size: cover; }
+
+        .svc-1 .svc-card-bg { background: linear-gradient(145deg, #0d2210 0%, #1a3a1c 40%, #0a1a0c 100%); }
+        .svc-2 .svc-card-bg { background: linear-gradient(145deg, #1a2a0d 0%, #2a3a10 40%, #0f1a0a 100%); }
+        .svc-3 .svc-card-bg { background: linear-gradient(145deg, #0d1a2a 0%, #10263a 40%, #081018 100%); }
+        .svc-4 .svc-card-bg { background: linear-gradient(145deg, #1a1a0d 0%, #2a2a10 40%, #101008 100%); }
+
+        /* Gradient overlay text readability */
+        .svc-card::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 80%;
+            background: linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.45) 55%, transparent 100%);
+            z-index: 1;
+        }
+
+        .svc-card-body {
+            position: relative; z-index: 2;
+            padding: 1.75rem 1.5rem;
+        }
+
+        .svc-icon-wrap {
+            width: 48px; height: 48px; background: var(--green);
+            border-radius: .75rem; display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; color: var(--white); margin-bottom: .85rem;
+        }
+
+        .svc-card h3 { color: var(--white); font-size: 1.35rem; margin-bottom: .5rem; }
+        .svc-card p { color: rgba(255,255,255,.8); font-size: .85rem; line-height: 1.6; margin-bottom: 1rem; }
+
+        .svc-link {
+            display: inline-flex; align-items: center; gap: .5rem;
+            color: var(--white); font-weight: 600; font-size: .85rem;
+            border: 1.5px solid rgba(255,255,255,.45);
+            padding: .45rem 1.1rem; border-radius: 2rem;
+            backdrop-filter: blur(4px); background: rgba(255,255,255,.1);
+            transition: all .3s;
+        }
+
+        .svc-link:hover { background: var(--white); color: var(--green); }
+
+        /* ═══════════════════════════════════════════
+           BEFORE / AFTER SLIDER
+        ═══════════════════════════════════════════ */
+        .ba-section { background: var(--light-bg); }
+
+        .ba-section .sec-eyebrow { display: block; text-align: center; }
+        .ba-section h2 { text-align: center; margin-bottom: .75rem; }
+        .ba-section .ba-sub { text-align: center; max-width: 560px; margin: 0 auto 3rem; }
+
+        .slider-wrap {
+            position: relative; max-width: 950px; margin: 0 auto;
+            overflow: hidden; border-radius: 1rem;
+            box-shadow: var(--sh-lg); cursor: ew-resize;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        .slider-inner { position: relative; width: 100%; height: 500px; }
+
+        .slider-img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        /* CSS placeholder backgrounds for before/after */
+        .slider-before-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #2a1a08 0%, #4a3010 60%, #1a1008 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .slider-after-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #0d2010 0%, #1e4a20 60%, #0a1508 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .slider-ph-text {
+            color: rgba(255,255,255,.5); font-size: .9rem;
+            text-align: center; padding: 1rem; line-height: 1.6;
+        }
+
+        .slider-ph-text i { display: block; font-size: 2.5rem; margin-bottom: .5rem; opacity: .4; }
+        .slider-ph-text strong { color: rgba(255,255,255,.75); }
+
+        .slider-before-el {
+            z-index: 5;
+            clip-path: inset(0 50% 0 0);
+            position: absolute; inset: 0;
+        }
+
+        .slider-after-el { z-index: 3; }
+
+        .slider-handle {
+            position: absolute; top: 0; left: 50%;
+            width: 4px; height: 100%;
+            background: var(--white); z-index: 10;
+            transform: translateX(-50%);
+        }
+
+        .slider-btn {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            width: 50px; height: 50px; background: var(--white);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--sh-md); pointer-events: none; z-index: 11;
+        }
+
+        .slider-btn::before, .slider-btn::after {
+            content: ''; position: absolute;
+            width: 0; height: 0; border-style: solid;
+        }
+
+        .slider-btn::before { right: 17px; border-width: 8px 11px 8px 0; border-color: transparent var(--green) transparent transparent; }
+        .slider-btn::after  { left:  17px; border-width: 8px 0 8px 11px; border-color: transparent transparent transparent var(--green); }
+
+        .slider-lbl {
+            position: absolute; top: 18px; z-index: 8;
+            font-weight: 800; font-size: 1.1rem; color: var(--white);
+            text-shadow: 0 2px 8px rgba(0,0,0,.4);
+        }
+
+        .slider-lbl-before { left: 20px; }
+        .slider-lbl-after  { right: 20px; }
+
+        /* ═══════════════════════════════════════════
+           ABOUT
+        ═══════════════════════════════════════════ */
+        .about-section { background: var(--white); }
+
+        .about-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 4.5rem; align-items: center;
+        }
+
+        .about-text h2 { margin-bottom: 1.25rem; }
+        .about-text p { line-height: 1.85; }
+
+        .about-features { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 1.75rem; }
+
+        .feat-item { display: flex; gap: 1rem; align-items: flex-start; }
+
+        .feat-icon { color: var(--green); font-size: 1.4rem; flex-shrink: 0; margin-top: .1rem; }
+
+        .feat-text h4 { font-size: .95rem; font-weight: 800; margin-bottom: .2rem; color: var(--text-dark); font-family: 'Montserrat', sans-serif; }
+        .feat-text p  { margin: 0; font-size: .88rem; color: var(--text-mid); }
+
+        .about-gallery {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            border-radius: 1rem; overflow: hidden;
+            aspect-ratio: 1; position: relative;
+            box-shadow: var(--sh-md);
+        }
+
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+        .gallery-item:hover img { transform: scale(1.06); }
+
+        .gallery-ph {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: .5rem;
+            font-size: .75rem; color: rgba(255,255,255,.3); text-align: center;
+            padding: 1rem;
+        }
+
+        .gallery-ph i { font-size: 2rem; opacity: .3; }
+
+        .gph-1 { background: linear-gradient(135deg, #0d2210, #1a3820); }
+        .gph-2 { background: linear-gradient(135deg, #101a2a, #182840); }
+        .gph-3 { background: linear-gradient(135deg, #1a1008, #2a2010); }
+        .gph-4 { background: linear-gradient(135deg, #1a0808, #2a1010); }
+
+        /* ═══════════════════════════════════════════
+           TESTIMONIALS (auto-scrolling carousel)
+        ═══════════════════════════════════════════ */
+        .testi-section { background: var(--light-bg); overflow: hidden; }
+
+        .testi-section h2 { text-align: center; margin-bottom: .75rem; }
+        .testi-section .testi-sub { text-align: center; max-width: 540px; margin: 0 auto 2.5rem; }
+
+        .testi-carousel { position: relative; margin-top: .5rem; overflow: hidden; }
+
+        .testi-carousel::before,
+        .testi-carousel::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+        }
+
+        .testi-carousel::before { left: 0; background: linear-gradient(to right, var(--light-bg), transparent); }
+        .testi-carousel::after  { right: 0; background: linear-gradient(to left, var(--light-bg), transparent); }
+
+        .testi-track {
+            display: flex; gap: 1.75rem;
+            animation: testi-scroll 35s linear infinite;
+        }
+
+        .testi-track:hover { animation-play-state: paused; }
+
+        @keyframes testi-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - .875rem)); }
+        }
+
+        .testi-card {
+            flex: 0 0 340px; background: var(--white);
+            padding: 1.75rem; border-radius: 1rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--sh-sm);
+            transition: all .3s;
+        }
+
+        .testi-card:hover { box-shadow: var(--sh-md); transform: translateY(-4px); }
+
+        .testi-stars { color: #ffc107; margin-bottom: .85rem; font-size: .95rem; }
+
+        .testi-quote {
+            color: var(--text-dark); font-size: .92rem; line-height: 1.75;
+            font-style: italic; margin-bottom: 1.25rem;
+        }
+
+        .testi-author { display: flex; align-items: center; gap: .85rem; }
+
+        .testi-avatar {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: .95rem; color: white; flex-shrink: 0;
+        }
+
+        .av-a { background: linear-gradient(135deg, var(--green), var(--green-acc)); }
+        .av-b { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+        .av-c { background: linear-gradient(135deg, #e65100, #ff9800); }
+        .av-d { background: linear-gradient(135deg, #6a1b9a, #ab47bc); }
+        .av-e { background: linear-gradient(135deg, #00695c, #26a69a); }
+        .av-f { background: linear-gradient(135deg, #c62828, #ef5350); }
+
+        .testi-name { font-size: .88rem; font-weight: 700; color: var(--text-dark); margin-bottom: .15rem; }
+        .testi-loc  { font-size: .78rem; color: var(--text-light); }
+
+        .google-badge {
+            display: inline-flex; align-items: center; gap: .35rem;
+            background: var(--light-bg); padding: .3rem .65rem;
+            border-radius: .3rem; font-size: .7rem; font-weight: 700;
+            color: var(--text-mid); margin-top: .85rem;
+        }
+
+        .google-badge i { color: #4285F4; }
+
+        /* ═══════════════════════════════════════════
+           ZONES DESSERVIES
+        ═══════════════════════════════════════════ */
+        .zones-section { background: var(--white); }
+
+        .zones-section h2 { text-align: center; margin-bottom: .75rem; }
+        .zones-section .zones-sub { text-align: center; max-width: 540px; margin: 0 auto 3rem; }
+
+        .map-wrap { max-width: 900px; margin: 0 auto; }
+
+        #zones-map {
+            width: 100%; height: 480px;
+            border-radius: 1rem; overflow: hidden;
+            box-shadow: var(--sh-lg); border: 1px solid var(--border);
+            z-index: 1;
+        }
+
+        /* Leaflet pulsing marker */
+        .leaflet-pin-wrap {
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .leaflet-pin-dot {
+            width: 14px; height: 14px; background: #e53935;
+            border-radius: 50%; border: 2.5px solid white;
+            box-shadow: 0 2px 8px rgba(229,57,53,.5);
+            animation: pin-pulse 2s ease-in-out infinite;
+        }
+        @keyframes pin-pulse {
+            0%,100% { box-shadow: 0 2px 8px rgba(229,57,53,.5), 0 0 0 0 rgba(229,57,53,.4); }
+            50%      { box-shadow: 0 2px 8px rgba(229,57,53,.5), 0 0 0 8px rgba(229,57,53,0); }
+        }
+
+        .zone-badge {
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+            background: linear-gradient(135deg, rgba(46,125,50,.08), rgba(76,175,80,.04));
+            border: 2px solid var(--green); color: var(--green);
+            padding: .9rem 1rem; border-radius: .75rem;
+            font-weight: 700; font-size: .88rem; text-align: center;
+            transition: all .3s; min-height: 56px;
+        }
+
+        .zone-badge:hover { background: var(--green); color: var(--white); transform: translateY(-3px); box-shadow: var(--sh-md); }
+
+        /* ═══════════════════════════════════════════
+           FAQ
+        ═══════════════════════════════════════════ */
+        .faq-section { background: var(--light-bg); }
+
+        .faq-section h2 { text-align: center; margin-bottom: .75rem; }
+        .faq-section .faq-sub { text-align: center; max-width: 540px; margin: 0 auto 3rem; }
+
+        .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: .85rem; }
+
+        .faq-item {
+            background: var(--white); border: 1px solid var(--border);
+            border-radius: .75rem; overflow: hidden; transition: all .3s;
+        }
+
+        .faq-item.open { border-color: var(--green); box-shadow: var(--sh-sm); }
+
+        .faq-q {
+            padding: 1.35rem 1.5rem; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: 700; color: var(--text-dark); font-size: .95rem;
+            background: var(--white); transition: all .3s; gap: 1rem;
+        }
+
+        .faq-item.open .faq-q { background: rgba(46,125,50,.04); color: var(--green); }
+        .faq-q:hover { background: var(--light-bg); }
+
+        .faq-chevron { color: var(--green); transition: transform .3s; flex-shrink: 0; }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+        .faq-a {
+            max-height: 0; overflow: hidden;
+            transition: max-height .35s ease, padding .35s;
+            color: var(--text-mid); font-size: .92rem; line-height: 1.8;
+        }
+
+        .faq-item.open .faq-a { max-height: 400px; padding: 0 1.5rem 1.5rem; }
+
+        /* ═══════════════════════════════════════════
+           CONTACT / SOUMISSION
+        ═══════════════════════════════════════════ */
+        .contact-section { background: var(--white); }
+
+        .contact-section h2 { text-align: center; margin-bottom: .75rem; }
+        .contact-section .contact-sub { text-align: center; max-width: 540px; margin: 0 auto 3rem; }
+
+        .contact-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 4rem; align-items: start;
+        }
+
+        .contact-form-box {
+            background: var(--light-bg); padding: 2.5rem;
+            border-radius: 1rem; border: 1px solid var(--border);
+        }
+
+        .fg { margin-bottom: 1.35rem; }
+
+        .fg label { display: block; font-weight: 600; font-size: .88rem; color: var(--text-dark); margin-bottom: .45rem; }
+
+        .fg input, .fg select {
+            width: 100%; padding: .85rem 1rem;
+            border: 1.5px solid #d4d4d4; border-radius: .5rem;
+            font-family: 'Inter', sans-serif; font-size: .93rem; color: var(--text-dark);
+            background: var(--white); outline: none; transition: all .25s;
+            -webkit-appearance: none; appearance: none;
+        }
+
+        .fg input::placeholder { color: #bbb; }
+
+        .fg input:focus, .fg select:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(46,125,50,.12);
+        }
+
+        .sel-wrap { position: relative; }
+
+        .sel-wrap::after {
+            content: ''; position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0;
+            border-left: 5px solid transparent; border-right: 5px solid transparent;
+            border-top: 5px solid var(--text-mid); pointer-events: none;
+        }
+
+        .btn-submit {
+            width: 100%; padding: 1rem; border: none;
+            background: var(--green); color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem; font-weight: 800; border-radius: .5rem;
+            cursor: pointer; transition: all .3s;
+            display: flex; align-items: center; justify-content: center; gap: .5rem;
+            box-shadow: 0 4px 16px rgba(46,125,50,.3);
+        }
+
+        .btn-submit:hover { background: #1f5620; transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+
+        .form-note { font-size: .75rem; color: #aaa; text-align: center; margin-top: .65rem; }
+
+        .msg { display: none; padding: .9rem 1rem; border-radius: .5rem; font-size: .88rem; font-weight: 600; margin-top: .75rem; text-align: center; }
+        .msg-ok  { background: rgba(76,175,80,.12); border: 1px solid var(--green-acc); color: var(--green); }
+        .msg-err { background: rgba(255,0,0,.08); border: 1px solid #ff6b6b; color: #c0392b; }
+
+        /* Contact info side */
+        .contact-info { display: flex; flex-direction: column; gap: 2.25rem; }
+
+        .ci-block { display: flex; gap: 1.25rem; align-items: flex-start; }
+
+        .ci-icon {
+            width: 52px; height: 52px; border-radius: .75rem;
+            background: rgba(46,125,50,.1); color: var(--green);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; flex-shrink: 0;
+        }
+
+        .ci-text h4 { font-size: .9rem; font-weight: 800; margin-bottom: .3rem; color: var(--text-dark); font-family: 'Montserrat', sans-serif; }
+        .ci-text p  { margin: 0; font-size: .9rem; color: var(--text-mid); line-height: 1.6; }
+        .ci-text a  { color: var(--green); font-weight: 600; }
+        .ci-text a:hover { color: var(--green-acc); }
+
+        /* ═══════════════════════════════════════════
+           FOOTER
+        ═══════════════════════════════════════════ */
+        footer {
+            background: var(--green-foot); color: rgba(255,255,255,.8);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem; margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,.12); padding-bottom: 3rem;
+        }
+
+        .footer-brand img { height: 42px; filter: brightness(0) invert(1); margin-bottom: 1rem; }
+        .footer-brand p { font-size: .87rem; color: rgba(255,255,255,.6); max-width: 280px; line-height: 1.7; margin-bottom: 1.5rem; }
+
+        .footer-socials { display: flex; gap: .65rem; }
+
+        .social-btn {
+            width: 38px; height: 38px; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.25);
+            background: rgba(255,255,255,.08);
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,.6); font-size: .9rem;
+            transition: all .3s;
+        }
+
+        .social-btn:hover { background: var(--white); color: var(--green); border-color: var(--white); }
+
+        .footer-col h4 {
+            color: var(--white); font-size: .82rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1.25rem;
+        }
+
+        .footer-links { display: flex; flex-direction: column; gap: .65rem; }
+        .footer-links a { color: rgba(255,255,255,.65); font-size: .88rem; transition: color .25s; }
+        .footer-links a:hover { color: var(--white); }
+
+        .footer-bottom {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem;
+            padding-top: 1.5rem;
+        }
+
+        .footer-bottom p { font-size: .8rem; color: rgba(255,255,255,.35); }
+        .footer-bottom a { color: rgba(255,255,255,.35); }
+        .footer-bottom a:hover { color: rgba(255,255,255,.7); }
+
+        /* ═══════════════════════════════════════════
+           MOBILE FLOATING BAR
+        ═══════════════════════════════════════════ */
+        .mobile-bar {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+            background: var(--white); border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 20px rgba(0,0,0,.1); padding: .75rem 1rem; gap: .65rem;
+        }
+
+        .mobile-bar a {
+            flex: 1; text-align: center; padding: .8rem; border-radius: 8px;
+            font-weight: 800; font-size: .88rem;
+            display: flex; align-items: center; justify-content: center; gap: .4rem;
+        }
+
+        .mb-call { background: rgba(46,125,50,.1); color: var(--green); }
+        .mb-quote { background: var(--green); color: var(--white); }
+
+        /* ═══════════════════════════════════════════
+           SCROLL REVEAL
+        ═══════════════════════════════════════════ */
+        /* Reveal — animations désactivées, tout visible immédiatement */
+        .reveal, .reveal.in { opacity: 1; transform: none; }
+        .d1, .d2, .d3, .d4 { transition-delay: 0s; }
+
+        /* ═══════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid   { grid-template-columns: 1fr 1fr; }
+            .footer-brand  { grid-column: 1 / -1; }
+            .zones-grid    { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 860px) {
+            nav { display: none; }
+            .nav-phone { display: none; }
+            .hamburger { display: flex; }
+
+            .hero-inner { flex-direction: column; }
+            .hero-right { order: -1; width: 100%; }
+            .hero-right .hero-video-wrap { max-height: 380px; }
+
+            .about-grid    { grid-template-columns: 1fr; gap: 2.5rem; }
+            .about-gallery { grid-template-columns: repeat(2,1fr); }
+
+            .contact-grid  { grid-template-columns: 1fr; }
+
+            .slider-inner  { height: 320px; }
+
+            .svc-card { min-height: 420px; }
+
+            .mobile-bar { display: flex; }
+            footer { padding-bottom: 5rem; }
+        }
+
+        @media (max-width: 640px) {
+            section { padding: 3.5rem 0; }
+            .services-grid { grid-template-columns: 1fr; }
+            .stats-grid    { grid-template-columns: repeat(2,1fr); gap: 1.25rem; }
+            .zones-grid    { grid-template-columns: repeat(2,1fr); }
+            .footer-grid   { grid-template-columns: 1fr; gap: 2rem; }
+            .stats-bar     { margin-top: 90px; }
+            .contact-form-box { padding: 1.75rem 1.25rem; }
+            .slider-inner  { height: 240px; }
+            .about-gallery { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     STATS BANNER (ticker — top of page)
+═══════════════════════════════════════════ -->
+<div class="stats-banner" role="marquee">
+    <div class="banner-track">
+        <div class="banner-item"><i class="fas fa-star"></i> <span class="banner-val">5.0</span> Note Google</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-calendar-check"></i> <span class="banner-val">15+</span> Années d'expérience</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-check-double"></i> <span class="banner-val">7 000+</span> Projets réalisés</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-shield-halved"></i> <span class="banner-val">100%</span> Satisfaction garantie</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-leaf"></i> Écoenergétique</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-id-badge"></i> RBQ Licencié</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-map-marker-alt"></i> Région de Québec</div>
+        <span class="banner-sep">·</span>
+        <!-- Duplicate for seamless loop -->
+        <div class="banner-item"><i class="fas fa-star"></i> <span class="banner-val">5.0</span> Note Google</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-calendar-check"></i> <span class="banner-val">15+</span> Années d'expérience</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-check-double"></i> <span class="banner-val">7 000+</span> Projets réalisés</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-shield-halved"></i> <span class="banner-val">100%</span> Satisfaction garantie</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-leaf"></i> Écoenergétique</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-id-badge"></i> RBQ Licencié</div>
+        <span class="banner-sep">·</span>
+        <div class="banner-item"><i class="fas fa-map-marker-alt"></i> Région de Québec</div>
+        <span class="banner-sep">·</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════ -->
+<header id="header">
+    <div class="header-inner">
+        <a href="#home" class="logo" aria-label="Habitations Confort">
+            <img src="logo-transparent.png" alt="Habitations Confort" />
+        </a>
+
+        <nav aria-label="Navigation principale">
+            <a href="#home">Accueil</a>
+            <a href="#services">Services</a>
+            <a href="#about">À propos</a>
+            <a href="#testimonials">Témoignages</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="header-right">
+            <a href="tel:5819958882" class="nav-phone">
+                <i class="fas fa-phone"></i> (581) 995-8882
+            </a>
+            <a href="#contact" class="btn btn-primary">Soumission Gratuite</a>
+        </div>
+
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+
+    <div class="mobile-menu" id="mobile-menu" role="navigation">
+        <a href="#home">Accueil</a>
+        <a href="#services">Services</a>
+        <a href="#about">À propos</a>
+        <a href="#testimonials">Témoignages</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+        <a href="tel:5819958882"><i class="fas fa-phone"></i> (581) 995-8882</a>
+        <a href="#contact" class="btn btn-primary" style="justify-content:center">Soumission Gratuite</a>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<section class="hero" id="home">
+    <div class="container">
+        <div class="hero-inner">
+
+            <!-- Left: text content -->
+            <div class="hero-left">
+                <div class="hero-eyebrow">Isolation résidentielle — Québec</div>
+
+                <h1>VOTRE CONFORT,<br/><span class="green">NOTRE</span> EXPERTISE.</h1>
+
+                <p class="hero-desc">
+                    Depuis plus de 15 ans, nous transformons les maisons québécoises en espaces sains,
+                    confortables et économes en énergie. Chaque projet est réalisé avec rigueur, transparence
+                    et les meilleurs matériaux du marché.
+                </p>
+
+                <div class="service-pills">
+                    <span class="pill">Isolation</span>
+                    <span class="pill">Décontamination</span>
+                    <span class="pill">Ventilation</span>
+                    <span class="pill">Extraction</span>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">
+                        <i class="fas fa-file-alt"></i> Soumission Gratuite
+                    </a>
+                    <a href="#services" class="btn btn-outline">
+                        <i class="fas fa-arrow-right"></i> Nos services
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Right: video -->
+            <div class="hero-right">
+                <div class="hero-video-wrap" id="heroVideoWrap">
+                    <!--
+                        VIDÉO : déposez "hero-video.mp4" dans ce dossier et la vidéo jouera automatiquement.
+                        Les balises <source> ci-dessous sont prêtes.
+                    -->
+                    <video id="heroVideo" playsinline autoplay muted loop>
+                        <source src="hero-video.mov"  type="video/mp4" />
+                        <source src="hero-video.mov"  type="video/quicktime" />
+                    </video>
+
+                    <!-- Placeholder shown only if video can't load -->
+                    <div class="hero-video-placeholder" id="heroVideoPlaceholder" style="display:none">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Déposez <strong>hero-video.mp4</strong><br/>dans ce dossier pour activer la vidéo</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CAMION / VAN SHOWCASE
+═══════════════════════════════════════════ -->
+<section class="van-section" id="reference">
+    <div class="container">
+        <p class="sec-eyebrow" style="text-align:center">La référence au Québec</p>
+        <h2>HABITATIONS CONFORT<br/>AU SERVICE DE VOTRE MAISON</h2>
+        <p class="van-sub">Des solutions innovantes pour une maison plus saine, plus confortable et plus économique.</p>
+
+        <div class="van-wrap">
+            <img src="camion.png" alt="Véhicule Habitations Confort" class="van-img"
+                 onerror="this.style.display='none'; document.getElementById('vanPH').style.display='flex';" />
+            <div class="van-placeholder" id="vanPH" style="display:none">
+                <i class="fas fa-truck"></i>
+                <p>Sauvegardez le camion comme <strong>camion.png</strong> dans ce dossier</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     STATS BAR
+═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════
+     SERVICES (fond vert + triangle)
+═══════════════════════════════════════════ -->
+<section class="services-section" id="services">
+    <svg class="triangle-divider" viewBox="0 0 1200 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,0 1200,0 600,80" fill="#ffffff"/>
+    </svg>
+
+    <div class="container">
+        <div class="reveal" style="text-align:center; margin-bottom:3rem">
+            <p class="sec-eyebrow sec-eyebrow-light">Ce que nous faisons</p>
+            <h2 style="color:#fff">NOS SERVICES</h2>
+            <p style="color:rgba(255,255,255,.75); max-width:540px; margin:.75rem auto 0">
+                Des solutions complètes pour votre maison — du diagnostic à la réalisation des travaux.
+            </p>
+        </div>
+
+        <div class="services-grid">
+
+            <!-- Isolation -->
+            <article class="svc-card svc-1 reveal">
+                <video class="svc-card-bg svc-video" muted loop playsinline preload="metadata">
+                    <source src="service-isolation.mov" type="video/mp4">
+                    <source src="service-isolation.mov" type="video/quicktime">
+                </video>
+                <div class="svc-card-body">
+                    <div class="svc-icon-wrap"><i class="fas fa-house-chimney"></i></div>
+                    <h3>ISOLATION</h3>
+                    <p>Cellulose soufflée et fibre de verre soufflée haute performance. Maximisez votre confort et réduisez vos factures d'énergie.</p>
+                    <a href="#contact" class="svc-link">Demander une soumission <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <!-- Décontamination -->
+            <article class="svc-card svc-2 reveal d1">
+                <video class="svc-card-bg svc-video" muted loop playsinline preload="metadata">
+                    <source src="service-decontamination.mov" type="video/mp4">
+                    <source src="service-decontamination.mov" type="video/quicktime">
+                </video>
+                <div class="svc-card-body">
+                    <div class="svc-icon-wrap"><i class="fas fa-biohazard"></i></div>
+                    <h3>DÉCONTAMINATION</h3>
+                    <p>Élimination complète des contaminants biologiques, moisissures et matériaux dangereux. Travail certifié, sécuritaire et conforme.</p>
+                    <a href="#contact" class="svc-link">Demander une soumission <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <!-- Ventilation -->
+            <article class="svc-card svc-3 reveal d2">
+                <video class="svc-card-bg svc-video" muted loop playsinline preload="metadata">
+                    <source src="service-ventilation.mov" type="video/mp4">
+                    <source src="service-ventilation.mov" type="video/quicktime">
+                </video>
+                <div class="svc-card-body">
+                    <div class="svc-icon-wrap"><i class="fas fa-wind"></i></div>
+                    <h3>VENTILATION</h3>
+                    <p>Installation et optimisation de systèmes de ventilation pour votre demeure. Réduit l'humidité, améliore la qualité de l'air intérieur.</p>
+                    <a href="#contact" class="svc-link">Demander une soumission <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <!-- Extraction -->
+            <article class="svc-card svc-4 reveal d3">
+                <video class="svc-card-bg svc-video" muted loop playsinline preload="metadata">
+                    <source src="service-extraction.mov" type="video/mp4">
+                    <source src="service-extraction.mov" type="video/quicktime">
+                </video>
+                <div class="svc-card-body">
+                    <div class="svc-icon-wrap"><i class="fas fa-screwdriver-wrench"></i></div>
+                    <h3>EXTRACTION</h3>
+                    <p>Retrait sécuritaire d'isolations contaminées (amiante, vermiculite, moisissures). Conformité totale avec les normes en vigueur.</p>
+                    <a href="#contact" class="svc-link">Demander une soumission <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     AVANT / APRÈS — Slider interactif
+═══════════════════════════════════════════ -->
+<section class="ba-section" id="before-after">
+    <div class="container">
+        <div class="reveal">
+            <p class="sec-eyebrow" style="text-align:center">Résultats concrets</p>
+            <h2>AVANT / APRÈS</h2>
+            <p class="ba-sub">La différence est remarquable. Glissez le curseur pour voir la transformation.</p>
+        </div>
+
+        <div class="slider-wrap reveal" id="sliderWrap">
+            <div class="slider-inner">
+                <!-- After (bottom layer) -->
+                <div class="slider-after-el slider-img" style="z-index:3;">
+                    <img src="apres.jpg" alt="Après isolation" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                </div>
+
+                <!-- Before (top layer, clipped) -->
+                <div class="slider-before-el" id="sliderBefore" style="z-index:5;">
+                    <img src="avant.jpg" alt="Avant isolation" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                </div>
+
+                <!-- Handle -->
+                <div class="slider-handle" id="sliderHandle">
+                    <div class="slider-btn"></div>
+                </div>
+
+                <div class="slider-lbl slider-lbl-before">AVANT</div>
+                <div class="slider-lbl slider-lbl-after">APRÈS</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     À PROPOS
+═══════════════════════════════════════════ -->
+<section class="about-section" id="about">
+    <div class="container">
+        <div class="about-grid">
+
+            <div class="about-text reveal">
+                <p class="sec-eyebrow">À propos de nous</p>
+                <h2>À PROPOS DE<br/>HABITATIONS CONFORT</h2>
+
+                <p>Depuis plus de 15 ans, Habitations Confort est le partenaire de confiance des propriétaires québécois qui souhaitent améliorer le confort, la salubrité et l'efficacité énergétique de leur maison.</p>
+
+                <p>Notre équipe de professionnels certifiés apporte une expertise reconnue en isolation, décontamination, ventilation et extraction d'isolation contaminée. Chaque projet est réalisé avec rigueur, respect des délais et transparence totale.</p>
+
+                <div class="about-features">
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="feat-text">
+                            <h4>EXPERTISE RECONNUE</h4>
+                            <p>7 000+ projets réalisés — une équipe formée et licenciée RBQ.</p>
+                        </div>
+                    </div>
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="feat-text">
+                            <h4>MATÉRIAUX DE QUALITÉ</h4>
+                            <p>Uniquement les meilleurs produits du marché, écologiques et durables.</p>
+                        </div>
+                    </div>
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="feat-text">
+                            <h4>DIAGNOSTICS GRATUITS</h4>
+                            <p>Évaluation complète et honnête de votre situation, sans frais ni engagement.</p>
+                        </div>
+                    </div>
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="feat-text">
+                            <h4>GARANTIE D'EXCELLENCE</h4>
+                            <p>Nos travaux sont garantis. Votre satisfaction est notre priorité absolue.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-gallery reveal d2">
+                <div class="gallery-item"><img src="apropos-1.jpg" alt="Habitations Confort équipe"></div>
+                <div class="gallery-item"><img src="apropos-2.jpg" alt="Habitations Confort travaux"></div>
+                <div class="gallery-item"><img src="apropos-4.jpg" alt="Habitations Confort service"></div>
+                <div class="gallery-item"><img src="apropos-3.jpg" alt="Habitations Confort isolation"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     TÉMOIGNAGES (carousel auto-scroll)
+═══════════════════════════════════════════ -->
+<section class="testi-section" id="testimonials">
+    <div class="container">
+        <div class="reveal">
+            <p class="sec-eyebrow" style="text-align:center">Avis clients</p>
+            <h2>CE QUE NOS CLIENTS DISENT</h2>
+            <p class="testi-sub">Des centaines de familles québécoises nous font confiance pour améliorer le confort de leur foyer.</p>
+        </div>
+    </div>
+
+    <div class="testi-carousel reveal">
+        <div class="testi-track">
+            <!-- Vrais avis Google -->
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« Ne perdez pas votre temps : faites affaire avec eux ! Le prix était très compétitif comparativement aux autres soumissions que j'avais reçues. »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-a">R</div>
+                    <div><p class="testi-name">Rémi</p><p class="testi-loc">Québec, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« Nous étions vraiment en confiance avec eux et ils ont bien pris la peine de tout nous expliquer les procédures. Ils prennent même un vidéo avant/après pour nous montrer leur travail. »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-b">A</div>
+                    <div><p class="testi-name">Anne-Marie</p><p class="testi-loc">Charlesbourg, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« Pour mes prochains projets, et pour tous mes amis qui auront besoin de ce type de service, Habitations Confort sera mon premier choix, sans hésitation. »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-c">H</div>
+                    <div><p class="testi-name">Hubert</p><p class="testi-loc">Lévis, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« L'équipe a été très professionnelle et ponctuelle. La qualité du travail d'isolation a vraiment réduit ma facture d'électricité. Je recommande sans hésiter ! »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-d">M</div>
+                    <div><p class="testi-name">Marie-Josée</p><p class="testi-loc">Sainte-Foy, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« Service impeccable du début à la fin. Respect des délais et du budget. Communication excellente tout au long des travaux de décontamination. »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-e">J</div>
+                    <div><p class="testi-name">Jean-Claude</p><p class="testi-loc">Beauport, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <p class="testi-quote">« Excellent choix ! Service personnalisé, équipe compétente et matériaux de première qualité. Très satisfait de mon investissement dans l'isolation. »</p>
+                <div class="testi-author">
+                    <div class="testi-avatar av-f">P</div>
+                    <div><p class="testi-name">Pierre</p><p class="testi-loc">Lorretteville, QC</p></div>
+                </div>
+                <div class="google-badge"><i class="fab fa-google"></i> Avis Google</div>
+            </div>
+
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Ne perdez pas votre temps : faites affaire avec eux ! C'est une équipe jeune, dynamique et extrêmement professionnelle. Mon système de chauffage travaille beaucoup moins depuis les travaux. Le prix était très compétitif — remarquable du début à la fin. »</p><div class="testi-author"><div class="testi-avatar av-a">H</div><div><p class="testi-name">Hubert G-M (Marquis Hub)</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Un gros merci à Habitations Confort pour l'isolation de notre toit. Nous étions vraiment en confiance avec eux et ils ont bien pris la peine de tout nous expliquer les procédures. Ils prennent même un vidéo avant/après. Les employés sont super gentils. Nous recommandons fortement!! »</p><div class="testi-author"><div class="testi-avatar av-b">A</div><div><p class="testi-name">Anne-Marie Lapointe</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« De l'évaluation bien expliquée par Vincent jusqu'aux travaux exécutés de façon très professionnelle, je suis très satisfaite d'Habitations Confort. Tout le personnel est courtois et compétent. Merci à toute l'équipe de votre bienveillance ! »</p><div class="testi-author"><div class="testi-avatar av-c">N</div><div><p class="testi-name">Nathalie Vezina</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Excellent service professionnel de la part de l'équipe composée de Phillipe et Joakim. Ils ont fait du très bon travail et ont su répondre à mes attentes. Je vous recommande cette entreprise ! »</p><div class="testi-author"><div class="testi-avatar av-d">S</div><div><p class="testi-name">Stéphane Bouchard</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Félicitations à toute leur équipe ! Du représentant jusqu'au personnel technique et administratif, tout le monde a été génial. Explications claires, bon suivi et toujours ponctuels. »</p><div class="testi-author"><div class="testi-avatar av-e">Y</div><div><p class="testi-name">Yves Coté</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Excellent service, j'ai fait ajouter de l'isolation dans le toit, dégagement de soffite, pose de déflecteur et un 18 po de laine. Top qualité qui ne se compresse pas, très satisfait, j'ai même eu une vidéo avant et après. Un gros merci, je recommande ! »</p><div class="testi-author"><div class="testi-avatar av-f">J</div><div><p class="testi-name">Jean-Philippe Anctil</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Super travail de qualité professionnel, je vous recommande fortement de faire affaire avec eux ! »</p><div class="testi-author"><div class="testi-avatar av-a">P</div><div><p class="testi-name">Pierre-Olivier Groulx</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très heureux d'avoir trouvé cette entreprise! Honnêteté et professionnalisme sont leur devise! »</p><div class="testi-author"><div class="testi-avatar av-b">S</div><div><p class="testi-name">Sunny LED</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très belle expérience avec l'équipe! Très belle job. Un grand merci les gars! »</p><div class="testi-author"><div class="testi-avatar av-c">J</div><div><p class="testi-name">Jacob Proulx</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très beau travail d'ajout d'isolation dans l'entre-toit. De la soumission jusqu'à la fin des travaux, les gars ont été polis, respectueux et professionnels. Merci ! »</p><div class="testi-author"><div class="testi-avatar av-d">S</div><div><p class="testi-name">Stephane Duchemin</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Nous avions un bon travail à faire (décontamination, extraction, ventilation, isolation) et l'équipe d'Habitations Confort ont livré avec brio. Efficaces, minutieux et excellent travail. Je recommande vivement sans hésiter. »</p><div class="testi-author"><div class="testi-avatar av-e">R</div><div><p class="testi-name">Remy Martel</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+
+            <!-- Duplicates for seamless loop -->
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Ne perdez pas votre temps : faites affaire avec eux ! C'est une équipe jeune, dynamique et extrêmement professionnelle. Mon système de chauffage travaille beaucoup moins depuis les travaux. Le prix était très compétitif — remarquable du début à la fin. »</p><div class="testi-author"><div class="testi-avatar av-a">H</div><div><p class="testi-name">Hubert G-M (Marquis Hub)</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Un gros merci à Habitations Confort pour l'isolation de notre toit. Nous étions vraiment en confiance avec eux et ils ont bien pris la peine de tout nous expliquer les procédures. Les employés sont super gentils. Nous recommandons fortement!! »</p><div class="testi-author"><div class="testi-avatar av-b">A</div><div><p class="testi-name">Anne-Marie Lapointe</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« De l'évaluation bien expliquée par Vincent jusqu'aux travaux exécutés de façon très professionnelle, je suis très satisfaite. Tout le personnel est courtois et compétent. Merci à toute l'équipe ! »</p><div class="testi-author"><div class="testi-avatar av-c">N</div><div><p class="testi-name">Nathalie Vezina</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Excellent service professionnel de la part de l'équipe composée de Phillipe et Joakim. Ils ont fait du très bon travail et ont su répondre à mes attentes. Je vous recommande cette entreprise ! »</p><div class="testi-author"><div class="testi-avatar av-d">S</div><div><p class="testi-name">Stéphane Bouchard</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Félicitations à toute leur équipe ! Du représentant jusqu'au personnel technique et administratif, tout le monde a été génial. Explications claires, bon suivi et toujours ponctuels. »</p><div class="testi-author"><div class="testi-avatar av-e">Y</div><div><p class="testi-name">Yves Coté</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Excellent service, j'ai fait ajouter de l'isolation dans le toit, dégagement de soffite, pose de déflecteur et un 18 po de laine. Top qualité, très satisfait, j'ai même eu une vidéo avant et après. Un gros merci, je recommande ! »</p><div class="testi-author"><div class="testi-avatar av-f">J</div><div><p class="testi-name">Jean-Philippe Anctil</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Super travail de qualité professionnel, je vous recommande fortement de faire affaire avec eux ! »</p><div class="testi-author"><div class="testi-avatar av-a">P</div><div><p class="testi-name">Pierre-Olivier Groulx</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très heureux d'avoir trouvé cette entreprise! Honnêteté et professionnalisme sont leur devise! »</p><div class="testi-author"><div class="testi-avatar av-b">S</div><div><p class="testi-name">Sunny LED</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très belle expérience avec l'équipe! Très belle job. Un grand merci les gars! »</p><div class="testi-author"><div class="testi-avatar av-c">J</div><div><p class="testi-name">Jacob Proulx</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Très beau travail d'ajout d'isolation dans l'entre-toit. De la soumission jusqu'à la fin des travaux, les gars ont été polis, respectueux et professionnels. Merci ! »</p><div class="testi-author"><div class="testi-avatar av-d">S</div><div><p class="testi-name">Stephane Duchemin</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+            <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-quote">« Nous avions un bon travail à faire (décontamination, extraction, ventilation, isolation) et l'équipe d'Habitations Confort ont livré avec brio. Efficaces, minutieux et excellent travail. Je recommande vivement. »</p><div class="testi-author"><div class="testi-avatar av-e">R</div><div><p class="testi-name">Remy Martel</p><p class="testi-loc">Québec, QC</p></div></div><div class="google-badge"><i class="fab fa-google"></i> Avis Google</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     ZONES DESSERVIES
+═══════════════════════════════════════════ -->
+<section class="zones-section" id="zones">
+    <div class="container">
+        <div class="reveal" style="text-align:center">
+            <p class="sec-eyebrow">Couverture géographique</p>
+            <h2>ZONES DESSERVIES</h2>
+            <p class="zones-sub">Nous desservons la région de Québec et ses environs. Vérifiez si votre secteur est couvert.</p>
+        </div>
+
+        <!-- Carte Leaflet interactive région de Québec -->
+        <div class="map-wrap reveal">
+            <div id="zones-map"></div>
+            <p style="text-align:center;font-size:.82rem;color:var(--text-light);margin-top:1rem;">📍 Cliquez sur un point rouge pour voir la ville</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FAQ
+═══════════════════════════════════════════ -->
+<section class="faq-section" id="faq">
+    <div class="container">
+        <div class="reveal">
+            <p class="sec-eyebrow" style="text-align:center">Questions fréquentes</p>
+            <h2>QUESTIONS FRÉQUEMMENT POSÉES</h2>
+            <p class="faq-sub">Trouvez les réponses à vos questions sur nos services d'isolation et de décontamination.</p>
+        </div>
+
+        <div class="faq-list reveal">
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Combien coûte une soumission ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Les soumissions sont entièrement gratuites et sans engagement. Un de nos experts visitera votre propriété, évaluera vos besoins et vous remettra une évaluation détaillée et transparente. Aucun frais caché.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Quels types d'isolation offrez-vous ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Nous spécialisons dans la cellulose soufflée (matériau écologique, excellent facteur R, fait de papier recyclé) et la fibre de verre soufflée (performance thermique optimale pour les hivers québécois). Les deux solutions sont idéales pour les greniers et entresols. Nous discutons de la meilleure option lors de l'évaluation.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Comment savoir si mon isolation est contaminée ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Plusieurs signes peuvent indiquer une isolation problématique : présence de moisissures, humidité persistante, odeurs, isolation granuleuse grise (possiblement vermiculite avec amiante), ou maison construite avant 1990. Nous offrons un diagnostic gratuit pour vous donner une réponse claire et honnête.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Combien de temps prennent les travaux d'isolation ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Pour une maison moyenne, les travaux d'isolation ou d'extraction prennent généralement 1 à 3 jours selon l'étendue du projet. Nous vous fournissons un calendrier précis lors de la soumission pour que vous puissiez vous organiser en conséquence.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Pourquoi est-ce important de ventiler l'entretoit ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Une mauvaise ventilation de l'entretoit cause l'accumulation d'humidité, ce qui favorise les moisissures, détériore la structure de bois et réduire la durée de vie de la toiture. Une bonne ventilation permet aussi de réduire les ponts thermiques et d'améliorer le confort été comme hiver.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">
+                    <span>Êtes-vous assurés et accrédités ?</span>
+                    <i class="fas fa-chevron-down faq-chevron"></i>
+                </div>
+                <div class="faq-a">Absolument. Habitations Confort est entièrement assuré, licencié RBQ et conforme à toutes les réglementations en vigueur au Québec. Nos techniciens sont formés spécifiquement pour les travaux de décontamination et d'extraction de matériaux dangereux. Votre sécurité est notre priorité.</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CONTACT / SOUMISSION
+═══════════════════════════════════════════ -->
+<section class="contact-section" id="contact">
+    <div class="container">
+        <div class="reveal">
+            <p class="sec-eyebrow" style="text-align:center">Soumission gratuite</p>
+            <h2>OBTENEZ VOTRE SOUMISSION GRATUITE</h2>
+            <p class="contact-sub">Remplissez le formulaire et nous vous contacterons rapidement avec une évaluation personnalisée.</p>
+        </div>
+
+        <div class="contact-grid reveal">
+
+            <!-- Form -->
+            <div class="contact-form-box">
+                <!--
+                    FORMSPREE :
+                    1. Créez un compte sur formspree.io (gratuit)
+                    2. Nouveau formulaire → info@habitationsconfort.com
+                    3. Remplacez YOUR_FORM_ID par votre ID (ex: xpwzqdnl)
+                -->
+                <form id="soumissionForm" action="https://formspree.io/f/mvzdplqd" method="POST" novalidate>
+                    <input type="text"   name="_gotcha"  style="display:none" tabindex="-1" autocomplete="off">
+                    <input type="hidden" name="_subject" value="Nouvelle soumission — Habitations Confort">
+
+                    <div class="fg">
+                        <label for="prenom">Prénom <span style="color:#e53935">*</span></label>
+                        <input type="text" id="prenom" name="prenom" placeholder="ex. Jean-François" required autocomplete="given-name">
+                    </div>
+
+                    <div class="fg">
+                        <label for="telephone">Numéro de téléphone <span style="color:#e53935">*</span></label>
+                        <input type="tel" id="telephone" name="telephone" placeholder="ex. 418-555-1234" required autocomplete="tel">
+                    </div>
+
+                    <div class="fg">
+                        <label for="secteur">Secteur (ville ou quartier) <span style="color:#e53935">*</span></label>
+                        <input type="text" id="secteur" name="secteur" placeholder="ex. Sainte-Foy, Charlesbourg, Lévis..." required>
+                    </div>
+
+                    <div class="fg">
+                        <label for="service">Service demandé <span style="color:#e53935">*</span></label>
+                        <div class="sel-wrap">
+                            <select id="service" name="service" required>
+                                <option value="" disabled selected>Choisissez un service...</option>
+                                <option value="Isolation">Isolation (cellulose soufflé / fibre de verre)</option>
+                                <option value="Décontamination">Décontamination</option>
+                                <option value="Ventilation">Ventilation</option>
+                                <option value="Extraction d'isolation contaminée">Extraction d'isolation contaminée</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Envoyer ma demande
+                    </button>
+
+                    <p class="form-note">En soumettant ce formulaire, vous acceptez d'être contacté par Habitations Confort.</p>
+
+                    <div class="msg msg-ok"  id="msgOk"  role="alert">✅ Votre demande a bien été envoyée ! Nous vous contacterons très bientôt.</div>
+                    <div class="msg msg-err" id="msgErr" role="alert">❌ Une erreur est survenue. Veuillez réessayer ou appeler le (581) 995-8882.</div>
+                </form>
+            </div>
+
+            <!-- Info side -->
+            <div class="contact-info">
+                <div class="ci-block">
+                    <div class="ci-icon"><i class="fas fa-phone"></i></div>
+                    <div class="ci-text">
+                        <h4>Téléphone</h4>
+                        <p><a href="tel:5819958882">(581) 995-8882</a></p>
+                    </div>
+                </div>
+                <div class="ci-block">
+                    <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="ci-text">
+                        <h4>Courriel</h4>
+                        <p><a href="mailto:info@habitationsconfort.com">info@habitationsconfort.com</a></p>
+                    </div>
+                </div>
+                <div class="ci-block">
+                    <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="ci-text">
+                        <h4>Adresse</h4>
+                        <p>2299 Bd du Versant N<br/>Québec, QC</p>
+                    </div>
+                </div>
+                <div class="ci-block">
+                    <div class="ci-icon"><i class="fas fa-clock"></i></div>
+                    <div class="ci-text">
+                        <h4>Heures d'ouverture</h4>
+                        <p>Lundi – Vendredi : 7h00 – 18h00<br/>Samedi : 8h00 – 15h00</p>
+                    </div>
+                </div>
+                <div class="ci-block">
+                    <div class="ci-icon"><i class="fas fa-id-badge"></i></div>
+                    <div class="ci-text">
+                        <h4>Accréditations</h4>
+                        <p style="font-family:monospace;line-height:1.6;">RBQ : 5850-6981-01<br/>NEQ : 1179699104</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════ -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+
+            <div class="footer-brand">
+                <img src="logo-transparent.png" alt="Habitations Confort" />
+                <p>Spécialistes en isolation résidentielle, décontamination et ventilation à Québec. Votre confort, notre expertise depuis plus de 15 ans.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-btn" title="Google"><i class="fab fa-google"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul class="footer-links">
+                    <li><a href="#services">Isolation</a></li>
+                    <li><a href="#services">Décontamination</a></li>
+                    <li><a href="#services">Ventilation</a></li>
+                    <li><a href="#services">Extraction d'isolation contaminée</a></li>
+                    <li><a href="#contact">Soumission Gratuite</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="#home">Accueil</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">À propos</a></li>
+                    <li><a href="#testimonials">Témoignages</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Habitations Confort. Tous droits réservés.</p>
+            <p style="color:rgba(255,255,255,.35);font-size:.8rem;font-family:monospace;line-height:1.6;">RBQ : 5850-6981-01<br>NEQ : 1179699104</p>
+            <p>
+                <a href="#">Politique de confidentialité</a> &nbsp;·&nbsp;
+                <a href="#">habitationsconfort.com</a>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- FLOATING MOBILE BAR -->
+<div class="mobile-bar" id="mobileBar">
+    <a href="tel:5819958882" class="mb-call"><i class="fas fa-phone"></i> Appeler</a>
+    <a href="#contact"       class="mb-quote"><i class="fas fa-file-alt"></i> Soumission gratuite</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+    /* ── Header shrink on scroll ─────────────── */
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── Mobile menu ─────────────────────────── */
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+        const open = mobileMenu.classList.toggle('active');
+        hamburger.setAttribute('aria-expanded', open);
+        const [s1,s2,s3] = hamburger.querySelectorAll('span');
+        s1.style.transform = open ? 'translateY(7px) rotate(45deg)' : '';
+        s2.style.opacity   = open ? '0' : '';
+        s3.style.transform = open ? 'translateY(-7px) rotate(-45deg)' : '';
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            hamburger.setAttribute('aria-expanded', 'false');
+            const [s1,s2,s3] = hamburger.querySelectorAll('span');
+            s1.style.transform = s2.style.opacity = s3.style.transform = '';
+        });
+    });
+
+    /* ── Hero video: show placeholder if error ─ */
+    const heroVideo = document.getElementById('heroVideo');
+    const heroPH    = document.getElementById('heroVideoPlaceholder');
+
+    heroVideo.addEventListener('error', () => {
+        heroVideo.style.display = 'none';
+        heroPH.style.display = 'flex';
+    });
+
+    /* If video has no src that works, show placeholder */
+    heroVideo.addEventListener('emptied', () => {
+        setTimeout(() => {
+            if (heroVideo.readyState === 0) {
+                heroVideo.style.display = 'none';
+                heroPH.style.display = 'flex';
+            }
+        }, 1500);
+    });
+
+    /* ── Sync hero video height to text column ─ */
+    function syncVideoHeight() {
+        const heroLeft = document.querySelector('.hero-left');
+        const wrap = document.querySelector('.hero-video-wrap');
+        if (!heroLeft || !wrap) return;
+        if (window.innerWidth > 860) {
+            wrap.style.height = heroLeft.offsetHeight + 'px';
+        } else {
+            wrap.style.height = 'auto';
+        }
+    }
+
+    window.addEventListener('load',   syncVideoHeight);
+    window.addEventListener('resize', syncVideoHeight);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncVideoHeight);
+
+    /* ── Before/After Slider ─────────────────── */
+    const sliderWrap   = document.getElementById('sliderWrap');
+    const sliderBefore = document.getElementById('sliderBefore');
+    const sliderHandle = document.getElementById('sliderHandle');
+    let isDragging = false;
+
+    function setSliderPos(clientX) {
+        const rect = sliderWrap.getBoundingClientRect();
+        const pct  = Math.min(Math.max((clientX - rect.left) / rect.width * 100, 2), 98);
+        sliderBefore.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+        sliderHandle.style.left     = pct + '%';
+    }
+
+    sliderWrap.addEventListener('mousedown',  e => { isDragging = true; setSliderPos(e.clientX); });
+    window.addEventListener('mouseup',        ()  => { isDragging = false; });
+    window.addEventListener('mousemove',      e   => { if (isDragging) setSliderPos(e.clientX); });
+
+    sliderWrap.addEventListener('touchstart', e => { isDragging = true; setSliderPos(e.touches[0].clientX); }, {passive:true});
+    window.addEventListener('touchend',       ()  => { isDragging = false; });
+    window.addEventListener('touchmove',      e   => { if (isDragging) setSliderPos(e.touches[0].clientX); }, {passive:true});
+
+    sliderWrap.addEventListener('click', e => setSliderPos(e.clientX));
+
+    /* ── FAQ Accordion ───────────────────────── */
+    document.querySelectorAll('.faq-q').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+
+    /* Reveal animations supprimées — tout visible immédiatement */
+
+    /* ── Vidéos services : jouer au hover / touch ── */
+    document.querySelectorAll('.svc-card').forEach(card => {
+        const video = card.querySelector('.svc-video');
+        if (!video) return;
+        // Desktop hover
+        card.addEventListener('mouseenter', () => { video.play(); });
+        card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+        // Mobile touch
+        card.addEventListener('touchstart', () => { video.play(); }, { passive: true });
+        card.addEventListener('touchend',   () => { setTimeout(() => { video.pause(); video.currentTime = 0; }, 2000); }, { passive: true });
+    });
+
+    /* ── Form submit (Formspree AJAX) ───────────*/
+    const form      = document.getElementById('soumissionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msgOk     = document.getElementById('msgOk');
+    const msgErr    = document.getElementById('msgErr');
+
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const fields = ['prenom','telephone','secteur','service'];
+        let valid = true;
+
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            const ok = el.value.trim() !== '';
+            el.style.borderColor = ok ? '' : '#e53935';
+            el.style.boxShadow   = ok ? '' : '0 0 0 3px rgba(229,57,53,.12)';
+            if (!ok) valid = false;
+        });
+
+        if (!valid) return;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+        try {
+            const res = await fetch(form.action, {
+                method: 'POST', body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (res.ok) {
+                form.reset();
+                msgOk.style.display  = 'block';
+                msgErr.style.display = 'none';
+                submitBtn.innerHTML  = '<i class="fas fa-check"></i> Demande envoyée !';
+                submitBtn.style.background = '#1f5620';
+            } else { throw new Error(); }
+
+        } catch {
+            msgErr.style.display = 'block';
+            msgOk.style.display  = 'none';
+            submitBtn.disabled   = false;
+            submitBtn.innerHTML  = '<i class="fas fa-paper-plane"></i> Envoyer ma demande';
+        }
+    });
+
+    fields_ids = ['prenom','telephone','secteur','service'];
+    fields_ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => { el.style.borderColor = ''; el.style.boxShadow = ''; });
+    });
+</script>
+
+<!-- ═══ LEAFLET MAP ═══ -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+    var mapEl = document.getElementById('zones-map');
+    if (!mapEl) return;
+
+    var map = L.map('zones-map', {
+        center: [46.75, -71.20],
+        zoom: 8,
+        scrollWheelZoom: false
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18
+    }).addTo(map);
+
+    var pinIcon = function() {
+        return L.divIcon({
+            className: '',
+            html: '<div class="leaflet-pin-wrap"><div class="leaflet-pin-dot"></div></div>',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+            popupAnchor: [0, -12]
+        });
+    };
+
+    var zones = [
+        { name: 'Québec',                  lat: 46.8139, lng: -71.2082 },
+        { name: 'Sainte-Foy',              lat: 46.7727, lng: -71.2882 },
+        { name: 'Charlesbourg',            lat: 46.8676, lng: -71.2654 },
+        { name: 'Beauport',                lat: 46.8716, lng: -71.1743 },
+        { name: 'Lévis',                   lat: 46.7183, lng: -71.1762 },
+        { name: 'Loretteville',            lat: 46.8643, lng: -71.3497 },
+        { name: 'Stoneham',                lat: 47.1833, lng: -71.3667 },
+        { name: 'Portneuf',                lat: 46.6833, lng: -71.8833 },
+        { name: 'Ste-Brigitte-de-Laval',   lat: 47.0167, lng: -71.2167 },
+        { name: 'Val-Bélair',              lat: 46.9167, lng: -71.3833 },
+        { name: 'Shannon',                 lat: 46.9167, lng: -71.5333 },
+        { name: 'Lac-Saint-Charles',       lat: 46.9667, lng: -71.3167 },
+        { name: 'Beaupré',                 lat: 47.0500, lng: -70.8833 },
+        { name: 'Berthier-sur-Mer',        lat: 46.9333, lng: -70.7333 },
+        { name: 'Montmagny',               lat: 46.9833, lng: -70.5500 },
+        { name: 'Donnacona',               lat: 46.6833, lng: -71.7667 },
+        { name: 'Saint-Raymond',           lat: 46.9000, lng: -71.8333 },
+        { name: 'Saint-Marc-des-Carrières',lat: 46.6833, lng: -72.0167 },
+        { name: 'Sainte-Marie',            lat: 46.4500, lng: -71.0333 },
+        { name: 'Saint-Lambert-de-Lauzon', lat: 46.6333, lng: -71.2167 },
+        { name: 'Saint-Clair',             lat: 46.5833, lng: -70.8667 },
+        { name: 'Thetford Mines',          lat: 46.1000, lng: -71.3000 },
+        { name: 'Laurier-Station',         lat: 46.5333, lng: -71.6333 },
+        { name: 'Saint-Victor',            lat: 46.1333, lng: -71.0167 },
+        { name: 'Saint-Georges',           lat: 46.1167, lng: -70.6667 },
+        { name: 'Lac-Etchemin',            lat: 46.4000, lng: -70.5167 },
+        { name: 'Saint-Prospère',              lat: 46.2167, lng: -71.0333 },
+        { name: 'Saint-Apollinaire',           lat: 46.6167, lng: -71.5333 },
+        { name: 'Saint-Augustin-de-Desmaures', lat: 46.7500, lng: -71.4500 },
+        { name: 'Plessisville',                lat: 46.2167, lng: -71.7667 },
+        { name: 'Saint-Gervais',               lat: 46.7167, lng: -70.8833 },
+        { name: 'Pont-Rouge',                  lat: 46.7500, lng: -71.6833 },
+        { name: 'Saint-Patrice-de-Beaurivage', lat: 46.5500, lng: -71.2833 }
+    ];
+
+    zones.forEach(function(z) {
+        L.marker([z.lat, z.lng], { icon: pinIcon(z.name) })
+            .addTo(map)
+            .bindPopup('<strong>' + z.name + '</strong><br>Zone desservie', { offset: [0, -8] });
+    });
+})();
+</script>
+
+</body>
+</html>
