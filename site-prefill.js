@@ -9,11 +9,13 @@
   // quand la page a fini de charger (les images déplacent le formulaire), sauf si la
   // personne a déjà commencé à faire défiler la page elle-même.
   let bouge=false;
-  ['wheel','touchstart','keydown'].forEach(t=>addEventListener(t,()=>{bouge=true;},{once:true,passive:true}));
+  const ecouter=(t,f,o)=>{try{globalThis.addEventListener?.(t,f,o);}catch{}};
+  ['wheel','touchstart','keydown'].forEach(t=>ecouter(t,()=>{bouge=true;},{once:true,passive:true}));
+  // Jamais bloquant : un vieux navigateur qui ne connaît pas « instant » défile simplement.
   const allerAuFormulaire=()=>{
     const c=document.querySelector('#contact');if(!c)return;
-    c.style.scrollMarginTop='120px';
-    c.scrollIntoView({block:'start',behavior:'instant'});
+    try{c.style.scrollMarginTop='120px';c.scrollIntoView({block:'start',behavior:'instant'});}
+    catch{try{c.scrollIntoView(true);}catch{}}
   };
   const apply=()=>{
     const form=document.querySelector('#soumissionForm');
@@ -22,5 +24,5 @@
     allerAuFormulaire();
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
-  addEventListener('load',()=>{if(!bouge)allerAuFormulaire();},{once:true});
+  ecouter('load',()=>{if(!bouge)allerAuFormulaire();},{once:true});
 })();
