@@ -4,7 +4,7 @@
   function phone(value){
     if(typeof value!=='string'||value.length>32||!/^[+\d\s().-]+$/.test(value))return '';
     let n=value.replace(/\D/g,'');if(n.length===11&&n[0]==='1')n=n.slice(1);
-    if(!/^(263|273|354|367|418|438|450|468|514|579|581|819|873)[2-9]\d{6}$/.test(n))return '';
+    if(!/^[2-9][0-8]\d[2-9]\d{6}$/.test(n)||/^[2-9]11/.test(n))return '';
     return n.slice(0,3)+' '+n.slice(3,6)+'-'+n.slice(6);
   }
   function sector(value){
